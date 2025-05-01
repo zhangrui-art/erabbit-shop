@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useMemberStore } from '@/stores'
+import { http } from '@/utils/request'
 
 const memberStore = useMemberStore()
 const testRequest = async () => {
-  const resp = await uni.request({
-    method: 'Get',
+  const resp = await http<number[]>({
+    method: 'GET',
     url: '/home/banner',
   })
   console.log('%c TS ', 'background-color:aqua;color: white;font-size: 40px', resp)
