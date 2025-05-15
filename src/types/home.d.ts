@@ -19,3 +19,30 @@ export type CategoryItem = {
   /** 类目图片 */
   icon: string
 }
+
+/** 首页-热门推荐数据类型 */
+export type HotItem = {
+  /** 商品id */
+  id: string
+  /** 商品标题 */
+  title: string
+  /** 商品图片 */
+  pictures: string[]
+  /** 商品价格 */
+  target: string
+  /** 商品标签 */
+  alt: string
+  type: number
+}
+
+/** 猜你喜欢数据类型 */
+export type GuessLikeItem = {
+  /** 商品id */
+  id: string
+  /** 商品标题 */
+  desc: string
+  name: string
+  orderNum: number
+  picture: string
+  price: number
+}
