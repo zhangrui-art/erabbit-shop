@@ -1,15 +1,42 @@
 <script setup lang="ts">
 import { getHomeGoodsGuessLike } from '@/services/home'
+import type { PageParams } from '@/types/global'
 import type { GuessLikeItem } from '@/types/home'
 import { ref, onMounted } from 'vue'
 
+const pageParams: Required<PageParams> = {
+  page: 1,
+  pageSize: 10,
+}
 const guessList = ref<GuessLikeItem[]>([])
+// 是否加载完成
+const finished = ref(false)
 const getGuessListData = async () => {
-  const res = await getHomeGoodsGuessLike()
-  guessList.value = res.result.items
+  if (finished.value)
+    return uni.showToast({
+      title: '没有更多数据了~',
+      icon: 'none',
+    })
+  const res = await getHomeGoodsGuessLike(pageParams)
+  guessList.value.push(...res.result.items)
+  if (res.result.pages > pageParams.page) {
+    pageParams.page++
+  } else {
+    finished.value = true
+  }
+}
+// 重置数据的方法
+const resetGuessListData = () => {
+  guessList.value = []
+  pageParams.page = 1
+  finished.value = false
 }
 onMounted(() => {
   getGuessListData()
+})
+defineExpose({
+  getMore: getGuessListData,
+  reset: resetGuessListData,
 })
 </script>
 
@@ -33,7 +60,7 @@ onMounted(() => {
       </view>
     </navigator>
   </view>
-  <view class="loading-text"> 正在加载... </view>
+  <view class="loading-text"> {{}} </view>
 </template>
 
 <style lang="scss">

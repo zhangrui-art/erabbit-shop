@@ -5,3 +5,8 @@ export type PageResult<T> = {
   pageSize: number
   pages: number
 }
+
+export type PageParams = {
+  page?: number
+  pageSize?: number
+}

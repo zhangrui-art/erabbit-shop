@@ -6,6 +6,8 @@ import { ref } from 'vue'
 import type { BannerItem, CategoryItem, HotItem } from '@/types/home'
 import CategoryPanel from './components/CategoryPanel.vue'
 import HomePanel from './components/HomePanel.vue'
+import type { XtxGuessInstance } from '@/types/component'
+import PageSkelton from './components/PageSkelton.vue'
 
 const bannerList = ref<BannerItem[]>([])
 const getHomeBannerData = async () => {
@@ -25,20 +27,48 @@ const getHomeHotData = async () => {
   hotList.value = res.result
 }
 
-onLoad(() => {
-  getHomeBannerData()
-  getHomeCategoryData()
-  getHomeHotData()
+const isLoading = ref(false)
+onLoad(async () => {
+  isLoading.value = true
+  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData()])
+  isLoading.value = false
 })
+
+const xtxGuessRef = ref<XtxGuessInstance>()
+const onScrollToLower = async () => {
+  await xtxGuessRef.value?.getMore()
+}
+const isRefresherTriggered = ref(false)
+const onRefresherRefresh = async () => {
+  isRefresherTriggered.value = true
+  xtxGuessRef.value?.reset(),
+    await Promise.all([
+      getHomeBannerData(),
+      getHomeCategoryData(),
+      getHomeHotData(),
+      xtxGuessRef.value?.getMore(),
+    ])
+  isRefresherTriggered.value = false
+}
 </script>
 
 <template>
   <CustomNavbar />
-  <scroll-view scroll-y class="scroll-view">
-    <XtxSwiper :list="bannerList" />
-    <CategoryPanel :list="categoryList" />
-    <HomePanel :list="hotList" />
-    <XtxGuess />
+  <scroll-view
+    refresher-enabled
+    @refresherrefresh="onRefresherRefresh"
+    @scrolltolower="onScrollToLower"
+    :refresher-triggered="isRefresherTriggered"
+    scroll-y
+    class="scroll-view"
+  >
+    <PageSkelton v-if="isLoading" />
+    <template v-else>
+      <XtxSwiper :list="bannerList" />
+      <CategoryPanel :list="categoryList" />
+      <HomePanel :list="hotList" />
+      <XtxGuess ref="xtxGuessRef" />
+    </template>
   </scroll-view>
 </template>
 

@@ -1,6 +1,6 @@
 import { http } from '@/utils/request'
 import type { BannerItem, CategoryItem, HotItem, GuessLikeItem } from '@/types/home'
-import type { PageResult } from '@/types/global'
+import type { PageParams, PageResult } from '@/types/global'
 export const getHomeBanner = (distributionSite: number) => {
   return http<BannerItem[]>({
     method: 'GET',
@@ -28,9 +28,10 @@ export const getHomeHot = () => {
 }
 
 /** 猜你喜欢 */
-export const getHomeGoodsGuessLike = () => {
+export const getHomeGoodsGuessLike = (data?: PageParams) => {
   return http<PageResult<GuessLikeItem>>({
     method: 'GET',
     url: '/home/goods/guessLike',
+    data,
   })
 }
